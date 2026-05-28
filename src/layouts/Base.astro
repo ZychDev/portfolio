@@ -51,6 +51,9 @@ const bootLines = [
         if (t === "dark" || (!t && prefers)) {
           document.documentElement.classList.add("dark");
         }
+        if (sessionStorage.getItem("booted")) {
+          document.documentElement.dataset.booted = "1";
+        }
       } catch (_) {
         /* ignore */
       }
@@ -60,7 +63,7 @@ const bootLines = [
   <body
     class="bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark min-h-screen flex flex-col"
   >
-    <div id="boot" aria-hidden="true" transition:persist>
+    <div id="boot" aria-hidden="true">
       {
         bootLines.map((line, i) => (
           <span class="boot-line" style={`animation-delay: ${i * 130}ms`}>
@@ -98,6 +101,17 @@ const bootLines = [
     <Footer />
 
     <script>
+      type RevealEl = HTMLElement;
+
+      const markBooted = () => {
+        document.documentElement.dataset.booted = "1";
+        try {
+          sessionStorage.setItem("booted", "1");
+        } catch (_) {
+          /* ignore */
+        }
+      };
+
       // Boot overlay: show once per session, then fade.
       const initBoot = () => {
         const boot = document.getElementById("boot");
@@ -105,26 +119,23 @@ const bootLines = [
         const reduced = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
-        const seen = sessionStorage.getItem("booted");
-        if (seen || reduced) {
+        const alreadyBooted = document.documentElement.dataset.booted === "1";
+        if (alreadyBooted || reduced) {
           boot.remove();
+          markBooted();
           return;
         }
         const total = 5 * 130 + 380; // last delay + extra dwell
         window.setTimeout(() => {
           boot.classList.add("fade-out");
-          window.setTimeout(() => boot.remove(), 380);
-          try {
-            sessionStorage.setItem("booted", "1");
-          } catch (_) {
-            /* ignore */
-          }
+          window.setTimeout(() => {
+            boot.remove();
+            markBooted();
+          }, 380);
         }, total);
       };
-      initBoot();
 
       // Reveal-on-scroll
-      type RevealEl = HTMLElement;
       const initReveal = () => {
         const els = document.querySelectorAll<RevealEl>(".reveal");
         const reduced = window.matchMedia(
@@ -147,8 +158,14 @@ const bootLines = [
         );
         els.forEach((el) => io.observe(el));
       };
-      initReveal();
-      document.addEventListener("astro:after-swap", initReveal);
+
+      const initPage = () => {
+        initBoot();
+        initReveal();
+      };
+
+      // Fires on initial load AND after each ClientRouter swap.
+      document.addEventListener("astro:page-load", initPage);
     </script>
   </body>
 </html>

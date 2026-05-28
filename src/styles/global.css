@@ -194,6 +194,7 @@ body::after {
   color: var(--color-mut-dark);
 }
 #boot[hidden] { display: none; }
+:root[data-booted] #boot { display: none !important; }
 #boot.fade-out {
   opacity: 0;
   transition: opacity 0.35s ease-out;
