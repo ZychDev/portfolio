@@ -3,17 +3,18 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* Light tokens kept for reference but the site forces dark. */
   --color-bg: #f4f1ea;
   --color-ink: #2b2a26;
   --color-mut: #8a877d;
   --color-line: #d9d5c8;
   --color-acc: #b5532a;
 
-  --color-bg-dark: #0d0f0c;
-  --color-ink-dark: #cfe8c0;
-  --color-mut-dark: #6a8a60;
+  --color-bg-dark: #0a0d09;
+  --color-ink-dark: #d4f0c2;
+  --color-mut-dark: #6e8e62;
   --color-line-dark: #1f2a1a;
-  --color-acc-dark: #7dd87d;
+  --color-acc-dark: #84e07e;
 
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -21,17 +22,23 @@
 }
 
 :root {
-  color-scheme: light;
-  --paper-dot: rgba(43, 42, 38, 0.07);
-  --scan-color: rgba(43, 42, 38, 0.05);
-  --vignette: rgba(0, 0, 0, 0.10);
-}
-
-:root.dark {
   color-scheme: dark;
-  --paper-dot: rgba(207, 232, 192, 0.07);
-  --scan-color: rgba(0, 0, 0, 0.28);
-  --vignette: rgba(0, 0, 0, 0.45);
+  /* Site is dark-only — redirect the "light" color tokens to the dark palette
+     so existing pages using text-acc / text-mut / bg-bg pick up green-on-black
+     without per-page edits. */
+  --color-bg: var(--color-bg-dark);
+  --color-ink: var(--color-ink-dark);
+  --color-mut: var(--color-mut-dark);
+  --color-line: var(--color-line-dark);
+  --color-acc: var(--color-acc-dark);
+
+  --paper-dot: rgba(132, 224, 126, 0.06);
+  --scan-color: rgba(0, 0, 0, 0.45);
+  --scan-strong: rgba(0, 0, 0, 0.55);
+  --vignette: rgba(0, 0, 0, 0.55);
+  --glow-acc: rgba(132, 224, 126, 0.55);
+  --glow-acc-soft: rgba(132, 224, 126, 0.18);
+  --glow-ink: rgba(212, 240, 194, 0.5);
 }
 
 html {
@@ -47,7 +54,7 @@ body {
   background-size: 22px 22px;
 }
 
-/* CRT scanlines overlay — fixed, on top, clicks pass through */
+/* Dense CRT scanlines */
 body::before {
   content: "";
   position: fixed;
@@ -61,10 +68,10 @@ body::before {
     transparent 1px,
     transparent 3px
   );
-  animation: crt-flicker 9s infinite;
+  animation: crt-flicker 5.5s infinite;
 }
 
-/* Vignette — soft dark corners */
+/* Vignette */
 body::after {
   content: "";
   position: fixed;
@@ -73,20 +80,102 @@ body::after {
   z-index: 59;
   background: radial-gradient(
     ellipse at center,
-    transparent 55%,
+    transparent 50%,
     var(--vignette) 100%
   );
 }
 
 @keyframes crt-flicker {
-  0%, 96%, 100% { opacity: 1; }
-  96.5% { opacity: 0.55; }
-  97% { opacity: 1; }
-  97.5% { opacity: 0.75; }
-  98% { opacity: 1; }
+  0%, 78%, 100% { opacity: 1; }
+  79% { opacity: 0.4; }
+  80% { opacity: 1; }
+  81% { opacity: 0.7; }
+  82% { opacity: 1; }
+  92% { opacity: 1; }
+  92.5% { opacity: 0.3; }
+  93% { opacity: 1; }
 }
 
-/* Blinking cursor */
+/* Moving CRT refresh line — sweeps down every 7s */
+#scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+  z-index: 61;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(132, 224, 126, 0.04) 45%,
+    rgba(132, 224, 126, 0.09) 50%,
+    rgba(132, 224, 126, 0.04) 55%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  animation: scanline-sweep 7s linear infinite;
+  will-change: transform;
+}
+@keyframes scanline-sweep {
+  0% { transform: translateY(-140px); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Screen-tear overlay, briefly fired by JS during glitch bursts */
+#screen-tear {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 62;
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+#screen-tear.fire {
+  animation: screen-tear 0.35s steps(4) forwards;
+}
+@keyframes screen-tear {
+  0%, 100% { opacity: 0; }
+  25% {
+    opacity: 1;
+    background: linear-gradient(
+      to bottom,
+      transparent 32%,
+      rgba(132, 224, 126, 0.55) 32%,
+      rgba(132, 224, 126, 0.55) 34%,
+      transparent 34%,
+      transparent 70%,
+      rgba(181, 83, 42, 0.4) 70%,
+      rgba(181, 83, 42, 0.4) 71%,
+      transparent 71%
+    );
+    transform: translateX(-3px);
+  }
+  50% {
+    opacity: 0.9;
+    background: linear-gradient(
+      to bottom,
+      transparent 55%,
+      rgba(132, 224, 126, 0.5) 55%,
+      rgba(132, 224, 126, 0.5) 58%,
+      transparent 58%
+    );
+    transform: translateX(3px);
+  }
+  75% {
+    opacity: 0.6;
+    background: linear-gradient(
+      to bottom,
+      transparent 18%,
+      rgba(132, 224, 126, 0.3) 18%,
+      rgba(132, 224, 126, 0.3) 19%,
+      transparent 19%
+    );
+    transform: translateX(-1px);
+  }
+}
+
+/* Blinking cursor — slightly glowing */
 .cursor {
   display: inline-block;
   width: 0.55em;
@@ -95,6 +184,7 @@ body::after {
   vertical-align: -0.12em;
   margin-left: 0.15em;
   animation: blink 1.1s steps(1) infinite;
+  box-shadow: 0 0 8px var(--glow-acc-soft);
 }
 
 @keyframes blink {
@@ -114,7 +204,7 @@ body::after {
   transform: none;
 }
 
-/* Animated underline for inline links */
+/* Animated underline */
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 0% 100%;
@@ -127,12 +217,25 @@ body::after {
   background-size: 100% 1px;
 }
 
-/* VT323 sits a bit higher — nudge baseline a touch */
+/* Phosphor glow utility — relies on currentColor */
+.glow {
+  text-shadow:
+    0 0 6px color-mix(in srgb, currentColor 55%, transparent),
+    0 0 18px color-mix(in srgb, currentColor 25%, transparent),
+    0 0 32px color-mix(in srgb, currentColor 10%, transparent);
+}
+.glow-soft {
+  text-shadow:
+    0 0 4px color-mix(in srgb, currentColor 40%, transparent),
+    0 0 12px color-mix(in srgb, currentColor 18%, transparent);
+}
+
+/* VT323 nudge */
 .font-display {
   letter-spacing: -0.005em;
 }
 
-/* Glitch effect for hero name on hover (CSS-only) */
+/* Glitch effect — hover or .glitch-fire class */
 .glitch {
   position: relative;
   display: inline-block;
@@ -144,32 +247,65 @@ body::after {
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.1s linear;
+  transition: opacity 0.08s linear;
 }
 .glitch:hover::before,
-.glitch:hover::after {
+.glitch:hover::after,
+.glitch.glitch-fire::before,
+.glitch.glitch-fire::after {
   opacity: 1;
 }
-.glitch:hover::before {
-  color: var(--color-acc);
+.glitch:hover::before,
+.glitch.glitch-fire::before {
+  color: var(--color-acc-dark);
   clip-path: inset(0 0 60% 0);
   transform: translate(-2px, 0);
-  animation: glitch-x 0.6s steps(2) infinite alternate;
+  animation: glitch-x 0.5s steps(2) infinite alternate;
+  text-shadow: 0 0 6px var(--glow-acc);
 }
-.glitch:hover::after {
+.glitch:hover::after,
+.glitch.glitch-fire::after {
   color: currentColor;
   clip-path: inset(60% 0 0 0);
   transform: translate(2px, 0);
-  animation: glitch-x 0.55s steps(2) infinite alternate-reverse;
+  animation: glitch-x 0.45s steps(2) infinite alternate-reverse;
   mix-blend-mode: difference;
 }
 @keyframes glitch-x {
   0%   { transform: translate(-2px, 0); }
-  20%  { transform: translate(2px, 1px); }
-  40%  { transform: translate(-1px, -1px); }
-  60%  { transform: translate(1px, 1px); }
-  80%  { transform: translate(-2px, 0); }
+  20%  { transform: translate(3px, 1px); }
+  40%  { transform: translate(-2px, -1px); }
+  60%  { transform: translate(2px, 1px); }
+  80%  { transform: translate(-3px, 0); }
   100% { transform: translate(2px, 0); }
+}
+
+/* Project numbers glitch lightly when their row is hovered */
+.row-glitch:hover .num-glitch::after,
+.row-glitch:hover .num-glitch::before {
+  opacity: 1;
+}
+.num-glitch {
+  position: relative;
+  display: inline-block;
+}
+.num-glitch::before,
+.num-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  color: var(--color-acc-dark);
+}
+.num-glitch::before {
+  transform: translateX(-1.5px);
+  clip-path: inset(0 0 55% 0);
+}
+.num-glitch::after {
+  transform: translateX(1.5px);
+  clip-path: inset(55% 0 0 0);
+  mix-blend-mode: difference;
 }
 
 /* Boot sequence overlay */
@@ -177,8 +313,8 @@ body::after {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background-color: var(--color-bg);
-  color: var(--color-mut);
+  background-color: var(--color-bg-dark);
+  color: var(--color-mut-dark);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -188,10 +324,6 @@ body::after {
   font-size: 0.95rem;
   line-height: 1.6;
   gap: 0.15rem;
-}
-:root.dark #boot {
-  background-color: var(--color-bg-dark);
-  color: var(--color-mut-dark);
 }
 #boot[hidden] { display: none; }
 :root[data-booted] #boot { display: none !important; }
@@ -210,18 +342,27 @@ body::after {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .cursor { animation: none; opacity: 1; }
+  .cursor { animation: none; opacity: 1; box-shadow: none; }
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
   }
   body::before { animation: none; }
+  #scanline { display: none; }
+  #screen-tear { display: none; }
   .glitch:hover::before,
-  .glitch:hover::after { display: none; animation: none; }
+  .glitch:hover::after,
+  .glitch.glitch-fire::before,
+  .glitch.glitch-fire::after {
+    display: none;
+    animation: none;
+  }
+  .num-glitch::before, .num-glitch::after { display: none; }
   #boot { display: none; }
+  .glow, .glow-soft { text-shadow: none; }
 }
 
 @media print {
-  body::before, body::after, #boot { display: none; }
+  body::before, body::after, #scanline, #screen-tear, #boot { display: none; }
 }

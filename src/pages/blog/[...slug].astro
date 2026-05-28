@@ -34,11 +34,11 @@ const fmt = (d: Date) =>
   type="article"
 >
   <article class="reveal">
-    <p class="font-mono text-acc text-sm">// blog/{post.id}</p>
+    <p class="font-mono text-acc text-sm glow-soft">// blog/{post.id}</p>
     <h1
-      class="font-mono text-3xl sm:text-4xl mt-3 leading-tight tracking-tight"
+      class="font-mono text-3xl sm:text-4xl mt-3 leading-tight tracking-tight text-ink glow"
     >
-      {post.data.title}
+      <span class="glitch" data-text={post.data.title}>{post.data.title}</span>
     </h1>
     <p class="mt-4 font-mono text-mut text-sm">
       {fmt(post.data.pubDate)} &middot; {readMin} min czytania

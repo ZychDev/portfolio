@@ -4,15 +4,18 @@ import AsciiDivider from "../components/AsciiDivider.astro";
 import { education } from "../data/education";
 import { interests } from "../data/interests";
 import { site } from "../data/site";
+
+const prompt = `${site.shortName}@portfolio:~$`;
 ---
 
 <Base title="O mnie" description="Kim jestem i co robię.">
   <section class="reveal">
-    <p class="font-mono text-acc text-sm">
+    <p class="font-mono text-acc text-sm glow-soft">
       <span class="text-mut">$</span> whoami --verbose
     </p>
-    <h1 class="font-mono text-2xl sm:text-3xl mt-3">
-      {site.shortName}@portfolio:~$<span class="cursor text-acc"></span>
+    <h1 class="font-mono text-2xl sm:text-3xl mt-3 text-ink glow">
+      <span class="glitch auto" data-text={prompt}>{prompt}</span><span
+        class="cursor text-acc"></span>
     </h1>
     <p class="mt-8 leading-relaxed max-w-prose text-lg">
       Programista z pasją do prostych, szybkich rzeczy. Lubię czysty kod,
@@ -28,16 +31,18 @@ import { site } from "../data/site";
       &gt; cat ~/edukacja.log
     </h2>
     <ol
-      class="mt-8 relative border-l border-line dark:border-line-dark pl-6 space-y-8"
+      class="mt-8 relative border-l border-line pl-6 space-y-8"
     >
       {
         education.map((e) => (
           <li class="reveal relative">
-            <span class="absolute -left-[1.6rem] top-1.5 size-3 rounded-full bg-acc ring-4 ring-bg dark:ring-bg-dark" />
+            <span class="absolute -left-[1.6rem] top-1.5 size-3 rounded-full bg-acc ring-4 ring-bg" />
             <p class="font-mono text-sm text-mut tabular-nums">
               {e.from} — {e.to}
             </p>
-            <p class="font-mono mt-1 text-base sm:text-lg">{e.school}</p>
+            <p class="font-mono mt-1 text-base sm:text-lg text-ink">
+              {e.school}
+            </p>
             {e.field && <p class="text-sm text-mut mt-0.5">{e.field}</p>}
             {e.description && (
               <p class="text-sm mt-2 leading-relaxed">{e.description}</p>
@@ -57,9 +62,9 @@ import { site } from "../data/site";
     <ul class="mt-8 grid sm:grid-cols-2 gap-4">
       {
         interests.map((i) => (
-          <li class="reveal group border border-line dark:border-line-dark p-4 hover:border-acc transition-colors">
-            <p class="font-mono">
-              <span class="text-acc mr-2 inline-block group-hover:translate-x-0.5 transition-transform">
+          <li class="reveal group border border-line p-4 hover:border-acc transition-colors">
+            <p class="font-mono text-ink">
+              <span class="text-acc mr-2 inline-block group-hover:translate-x-0.5 transition-transform glow-soft">
                 {i.icon}
               </span>
               {i.name}

@@ -9,13 +9,13 @@ const selected = projects.slice(0, 3);
 
 <Base>
   <section class="reveal">
-    <p class="font-mono text-acc text-sm">
+    <p class="font-mono text-acc text-sm glow-soft">
       <span class="text-mut">$</span> whoami
     </p>
     <h1
-      class="font-display text-6xl sm:text-8xl mt-4 leading-[0.95] tracking-tight"
+      class="font-display text-6xl sm:text-8xl mt-4 leading-[0.95] tracking-tight text-ink glow"
     >
-      <span class="glitch" data-text={site.author}>{site.author}</span><span
+      <span class="glitch auto" data-text={site.author}>{site.author}</span><span
         class="cursor text-acc"></span>
     </h1>
     <p class="font-mono text-mut mt-6">
@@ -27,8 +27,8 @@ const selected = projects.slice(0, 3);
       i myśli z drogi.
     </p>
     <div class="mt-10 flex gap-6 font-mono text-sm">
-      <a class="link-underline text-acc" href="/projekty">→ projekty</a>
-      <a class="link-underline text-acc" href="/blog">→ blog</a>
+      <a class="link-underline text-acc glow-soft" href="/projekty">→ projekty</a>
+      <a class="link-underline text-acc glow-soft" href="/blog">→ blog</a>
     </div>
   </section>
 
@@ -39,18 +39,20 @@ const selected = projects.slice(0, 3);
       &gt; selected work
     </h2>
     <ul
-      class="mt-6 divide-y divide-line dark:divide-line-dark border-y border-line dark:border-line-dark"
+      class="mt-6 divide-y divide-line border-y border-line"
     >
       {
         selected.map((p) => (
           <li class="reveal">
             <a
               href={`/projekty#${p.id}`}
-              class="group grid grid-cols-[2.5rem_1fr_auto_1.5rem] sm:grid-cols-[3rem_1fr_auto_2rem] items-baseline gap-3 py-5 px-2 hover:bg-acc/5 transition-colors"
+              class="row-glitch group grid grid-cols-[2.5rem_1fr_auto_1.5rem] sm:grid-cols-[3rem_1fr_auto_2rem] items-baseline gap-3 py-5 px-2 hover:bg-acc/10 transition-colors"
             >
-              <span class="font-mono text-acc text-sm">{p.num}</span>
+              <span class="num-glitch font-mono text-acc text-sm glow-soft" data-text={p.num}>
+                {p.num}
+              </span>
               <span class="min-w-0">
-                <span class="font-mono text-base sm:text-lg block">
+                <span class="font-mono text-base sm:text-lg block text-ink">
                   {p.title}
                 </span>
                 <span class="block text-sm text-mut mt-1 line-clamp-2">
@@ -60,7 +62,7 @@ const selected = projects.slice(0, 3);
               <span class="font-mono text-mut text-sm tabular-nums">
                 {p.year}
               </span>
-              <span class="font-mono text-acc transition-transform group-hover:translate-x-1">
+              <span class="font-mono text-acc transition-transform group-hover:translate-x-1 glow-soft">
                 →
               </span>
             </a>
@@ -69,7 +71,7 @@ const selected = projects.slice(0, 3);
       }
     </ul>
     <p class="mt-6 font-mono text-sm">
-      <a class="link-underline text-acc" href="/projekty">
+      <a class="link-underline text-acc glow-soft" href="/projekty">
         <span class="text-mut">$</span> ls -la ~/projects
       </a>
     </p>

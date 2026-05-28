@@ -16,8 +16,12 @@ const fmt = (d: Date) =>
 
 <Base title="Blog" description="Notatki, eksperymenty, przemyślenia.">
   <section class="reveal">
-    <p class="font-mono text-acc text-sm">// blog</p>
-    <h1 class="font-mono text-3xl sm:text-4xl mt-3">tail -f ~/notes.log</h1>
+    <p class="font-mono text-acc text-sm glow-soft">
+      <span class="text-mut">$</span> tail -f ~/notes.log
+    </p>
+    <h1 class="font-mono text-3xl sm:text-4xl mt-3 text-ink glow">
+      <span class="glitch auto" data-text="~/notes.log">~/notes.log</span>
+    </h1>
     <p class="mt-4 text-mut max-w-prose">
       Krótkie wpisy o tym, co aktualnie mnie zajmuje.
     </p>
@@ -27,19 +31,19 @@ const fmt = (d: Date) =>
     posts.length === 0 ? (
       <p class="mt-12 font-mono text-mut">$ ls: brak wpisów</p>
     ) : (
-      <ul class="mt-12 divide-y divide-line dark:divide-line-dark border-y border-line dark:border-line-dark">
+      <ul class="mt-12 divide-y divide-line border-y border-line">
         {posts.map((post) => (
           <li class="reveal">
             <a
               href={`/blog/${post.id}/`}
-              class="group block py-6 px-2 hover:bg-acc/5 transition-colors"
+              class="row-glitch group block py-6 px-2 hover:bg-acc/10 transition-colors"
             >
               <p class="font-mono text-sm text-mut tabular-nums">
                 {fmt(post.data.pubDate)}
               </p>
-              <h2 class="font-mono text-lg sm:text-xl mt-1 group-hover:text-acc transition-colors">
+              <h2 class="font-mono text-lg sm:text-xl mt-1 text-ink group-hover:text-acc transition-colors">
                 {post.data.title}
-                <span class="text-acc inline-block transition-transform group-hover:translate-x-1 ml-1">
+                <span class="text-acc inline-block transition-transform group-hover:translate-x-1 ml-1 glow-soft">
                   →
                 </span>
               </h2>
