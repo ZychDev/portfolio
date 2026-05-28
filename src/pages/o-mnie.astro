@@ -3,12 +3,17 @@ import Base from "../layouts/Base.astro";
 import AsciiDivider from "../components/AsciiDivider.astro";
 import { education } from "../data/education";
 import { interests } from "../data/interests";
+import { site } from "../data/site";
 ---
 
 <Base title="O mnie" description="Kim jestem i co robię.">
   <section class="reveal">
-    <p class="font-mono text-acc text-sm">// o-mnie</p>
-    <h1 class="font-mono text-3xl sm:text-4xl mt-3">cat ~/about.txt</h1>
+    <p class="font-mono text-acc text-sm">
+      <span class="text-mut">$</span> whoami --verbose
+    </p>
+    <h1 class="font-mono text-2xl sm:text-3xl mt-3">
+      {site.shortName}@portfolio:~$<span class="cursor text-acc"></span>
+    </h1>
     <p class="mt-8 leading-relaxed max-w-prose text-lg">
       Programista z pasją do prostych, szybkich rzeczy. Lubię czysty kod,
       krótkie loadingi i klimaty wczesnego internetu. Tu zbieram swoje
@@ -16,11 +21,11 @@ import { interests } from "../data/interests";
     </p>
   </section>
 
-  <AsciiDivider />
+  <AsciiDivider char="─·" count={30} />
 
   <section class="reveal">
     <h2 class="font-mono text-mut uppercase tracking-[0.25em] text-xs">
-      Edukacja
+      &gt; cat ~/edukacja.log
     </h2>
     <ol
       class="mt-8 relative border-l border-line dark:border-line-dark pl-6 space-y-8"
@@ -34,18 +39,20 @@ import { interests } from "../data/interests";
             </p>
             <p class="font-mono mt-1 text-base sm:text-lg">{e.school}</p>
             {e.field && <p class="text-sm text-mut mt-0.5">{e.field}</p>}
-            {e.description && <p class="text-sm mt-2 leading-relaxed">{e.description}</p>}
+            {e.description && (
+              <p class="text-sm mt-2 leading-relaxed">{e.description}</p>
+            )}
           </li>
         ))
       }
     </ol>
   </section>
 
-  <AsciiDivider />
+  <AsciiDivider char="─·" count={30} />
 
   <section class="reveal">
     <h2 class="font-mono text-mut uppercase tracking-[0.25em] text-xs">
-      Zainteresowania
+      &gt; ls ~/zainteresowania/
     </h2>
     <ul class="mt-8 grid sm:grid-cols-2 gap-4">
       {

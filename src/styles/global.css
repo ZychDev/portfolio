@@ -17,16 +17,21 @@
 
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "VT323", "IBM Plex Mono", ui-monospace, monospace;
 }
 
 :root {
   color-scheme: light;
   --paper-dot: rgba(43, 42, 38, 0.07);
+  --scan-color: rgba(43, 42, 38, 0.05);
+  --vignette: rgba(0, 0, 0, 0.10);
 }
 
 :root.dark {
   color-scheme: dark;
   --paper-dot: rgba(207, 232, 192, 0.07);
+  --scan-color: rgba(0, 0, 0, 0.28);
+  --vignette: rgba(0, 0, 0, 0.45);
 }
 
 html {
@@ -42,6 +47,46 @@ body {
   background-size: 22px 22px;
 }
 
+/* CRT scanlines overlay — fixed, on top, clicks pass through */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--scan-color) 0,
+    var(--scan-color) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: crt-flicker 9s infinite;
+}
+
+/* Vignette — soft dark corners */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 59;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    var(--vignette) 100%
+  );
+}
+
+@keyframes crt-flicker {
+  0%, 96%, 100% { opacity: 1; }
+  96.5% { opacity: 0.55; }
+  97% { opacity: 1; }
+  97.5% { opacity: 0.75; }
+  98% { opacity: 1; }
+}
+
+/* Blinking cursor */
 .cursor {
   display: inline-block;
   width: 0.55em;
@@ -57,6 +102,7 @@ body {
   50.01%, 100% { opacity: 0; }
 }
 
+/* Reveal-on-scroll */
 .reveal {
   opacity: 0;
   transform: translateY(12px);
@@ -68,6 +114,7 @@ body {
   transform: none;
 }
 
+/* Animated underline for inline links */
 .link-underline {
   background-image: linear-gradient(currentColor, currentColor);
   background-position: 0% 100%;
@@ -80,6 +127,86 @@ body {
   background-size: 100% 1px;
 }
 
+/* VT323 sits a bit higher — nudge baseline a touch */
+.font-display {
+  letter-spacing: -0.005em;
+}
+
+/* Glitch effect for hero name on hover (CSS-only) */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s linear;
+}
+.glitch:hover::before,
+.glitch:hover::after {
+  opacity: 1;
+}
+.glitch:hover::before {
+  color: var(--color-acc);
+  clip-path: inset(0 0 60% 0);
+  transform: translate(-2px, 0);
+  animation: glitch-x 0.6s steps(2) infinite alternate;
+}
+.glitch:hover::after {
+  color: currentColor;
+  clip-path: inset(60% 0 0 0);
+  transform: translate(2px, 0);
+  animation: glitch-x 0.55s steps(2) infinite alternate-reverse;
+  mix-blend-mode: difference;
+}
+@keyframes glitch-x {
+  0%   { transform: translate(-2px, 0); }
+  20%  { transform: translate(2px, 1px); }
+  40%  { transform: translate(-1px, -1px); }
+  60%  { transform: translate(1px, 1px); }
+  80%  { transform: translate(-2px, 0); }
+  100% { transform: translate(2px, 0); }
+}
+
+/* Boot sequence overlay */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: var(--color-bg);
+  color: var(--color-mut);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  gap: 0.15rem;
+}
+:root.dark #boot {
+  background-color: var(--color-bg-dark);
+  color: var(--color-mut-dark);
+}
+#boot[hidden] { display: none; }
+#boot.fade-out {
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+}
+#boot span.boot-line {
+  opacity: 0;
+  transform: translateY(2px);
+  animation: boot-in 0.18s ease-out forwards;
+}
+@keyframes boot-in {
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .cursor { animation: none; opacity: 1; }
@@ -88,4 +215,12 @@ body {
     transform: none;
     transition: none;
   }
+  body::before { animation: none; }
+  .glitch:hover::before,
+  .glitch:hover::after { display: none; animation: none; }
+  #boot { display: none; }
+}
+
+@media print {
+  body::before, body::after, #boot { display: none; }
 }

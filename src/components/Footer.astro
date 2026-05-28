@@ -4,44 +4,74 @@ import { site } from "../data/site";
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-line dark:border-line-dark mt-20">
+<footer class="border-t border-line dark:border-line-dark mt-20 relative z-30">
   <div
-    class="mx-auto max-w-3xl px-6 sm:px-8 py-8 font-mono text-sm text-mut flex flex-col sm:flex-row gap-4 sm:items-center justify-between"
+    class="mx-auto max-w-3xl px-6 sm:px-8 py-8 font-mono text-sm text-mut flex flex-col gap-4"
   >
-    <p>
-      <span class="text-acc">$</span> last updated <time datetime={String(year)}
-        >{year}</time
-      ><span class="cursor text-acc"></span>
+    <div class="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+      <p>
+        <span class="text-acc">$</span> last updated <time datetime={String(year)}
+          >{year}</time
+        ><span class="cursor text-acc"></span>
+      </p>
+      <ul class="flex flex-wrap gap-5">
+        <li>
+          <a
+            class="link-underline hover:text-acc"
+            href={site.github}
+            rel="noreferrer">github</a
+          >
+        </li>
+        <li>
+          <a class="link-underline hover:text-acc" href={`mailto:${site.email}`}
+            >e-mail</a
+          >
+        </li>
+        {
+          site.linkedin && (
+            <li>
+              <a
+                class="link-underline hover:text-acc"
+                href={site.linkedin}
+                rel="noreferrer"
+              >
+                linkedin
+              </a>
+            </li>
+          )
+        }
+        <li>
+          <a class="link-underline hover:text-acc" href="/rss.xml">rss</a>
+        </li>
+      </ul>
+    </div>
+    <p
+      class="text-xs flex flex-wrap gap-x-4 gap-y-1 pt-2 border-t border-dotted border-line dark:border-line-dark"
+    >
+      <span>uptime: <span id="uptime" class="tabular-nums">--</span></span>
+      <span>locale: pl_PL</span>
+      <span>encoding: utf-8</span>
+      <span>shell: astro</span>
     </p>
-    <ul class="flex flex-wrap gap-5">
-      <li>
-        <a
-          class="link-underline hover:text-acc"
-          href={site.github}
-          rel="noreferrer">github</a
-        >
-      </li>
-      <li>
-        <a class="link-underline hover:text-acc" href={`mailto:${site.email}`}
-          >e-mail</a
-        >
-      </li>
-      {
-        site.linkedin && (
-          <li>
-            <a
-              class="link-underline hover:text-acc"
-              href={site.linkedin}
-              rel="noreferrer"
-            >
-              linkedin
-            </a>
-          </li>
-        )
-      }
-      <li>
-        <a class="link-underline hover:text-acc" href="/rss.xml">rss</a>
-      </li>
-    </ul>
   </div>
 </footer>
+
+<script>
+  const startMs = Date.now();
+  const fmt = () => {
+    const s = Math.floor((Date.now() - startMs) / 1000);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}m ${String(sec).padStart(2, "0")}s`;
+  };
+  const tick = () => {
+    const el = document.getElementById("uptime");
+    if (el) el.textContent = fmt();
+  };
+  const w = window as typeof window & { __uptimeTimer?: number };
+  if (!w.__uptimeTimer) {
+    tick();
+    w.__uptimeTimer = window.setInterval(tick, 1000);
+  }
+  document.addEventListener("astro:after-swap", tick);
+</script>

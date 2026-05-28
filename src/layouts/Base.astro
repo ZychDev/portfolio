@@ -5,6 +5,7 @@ import "@fontsource/ibm-plex-mono/500.css";
 import "@fontsource/ibm-plex-mono/700.css";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
+import "@fontsource/vt323/400.css";
 
 import { ClientRouter } from "astro:transitions";
 import Header from "../components/Header.astro";
@@ -19,6 +20,14 @@ interface Props {
 }
 
 const { title, description, image, type } = Astro.props;
+
+const bootLines = [
+  "$ ./boot.sh",
+  "[ OK ] mounting /content",
+  "[ OK ] loading fonts: IBM Plex Mono, Inter, VT323",
+  "[ OK ] starting portfolio.service",
+  "[ OK ] ready.",
+];
 ---
 
 <!doctype html>
@@ -51,6 +60,35 @@ const { title, description, image, type } = Astro.props;
   <body
     class="bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark min-h-screen flex flex-col"
   >
+    <div id="boot" aria-hidden="true" transition:persist>
+      {
+        bootLines.map((line, i) => (
+          <span class="boot-line" style={`animation-delay: ${i * 130}ms`}>
+            {line.startsWith("[ OK ]") ? (
+              <>
+                <span class="text-acc">[ OK ]</span>
+                {line.slice(6)}
+              </>
+            ) : line.startsWith("$") ? (
+              <>
+                <span class="text-acc">$</span>
+                {line.slice(1)}
+              </>
+            ) : (
+              line
+            )}
+          </span>
+        ))
+      }
+    </div>
+
+    <noscript>
+      <style>
+        #boot { display: none !important; }
+        .reveal { opacity: 1 !important; transform: none !important; }
+      </style>
+    </noscript>
+
     <Header />
     <main
       class="flex-1 mx-auto w-full max-w-3xl px-6 sm:px-8 py-12 sm:py-16"
@@ -59,18 +97,35 @@ const { title, description, image, type } = Astro.props;
     </main>
     <Footer />
 
-    <noscript>
-      <style>
-        .reveal {
-          opacity: 1 !important;
-          transform: none !important;
-        }
-      </style>
-    </noscript>
-
     <script>
+      // Boot overlay: show once per session, then fade.
+      const initBoot = () => {
+        const boot = document.getElementById("boot");
+        if (!boot) return;
+        const reduced = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const seen = sessionStorage.getItem("booted");
+        if (seen || reduced) {
+          boot.remove();
+          return;
+        }
+        const total = 5 * 130 + 380; // last delay + extra dwell
+        window.setTimeout(() => {
+          boot.classList.add("fade-out");
+          window.setTimeout(() => boot.remove(), 380);
+          try {
+            sessionStorage.setItem("booted", "1");
+          } catch (_) {
+            /* ignore */
+          }
+        }, total);
+      };
+      initBoot();
+
+      // Reveal-on-scroll
       type RevealEl = HTMLElement;
-      const init = () => {
+      const initReveal = () => {
         const els = document.querySelectorAll<RevealEl>(".reveal");
         const reduced = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
@@ -92,8 +147,8 @@ const { title, description, image, type } = Astro.props;
         );
         els.forEach((el) => io.observe(el));
       };
-      init();
-      document.addEventListener("astro:after-swap", init);
+      initReveal();
+      document.addEventListener("astro:after-swap", initReveal);
     </script>
   </body>
 </html>

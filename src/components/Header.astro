@@ -13,7 +13,7 @@ const isActive = (href: string) =>
   href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
 ---
 
-<header class="border-b border-line dark:border-line-dark">
+<header class="border-b border-line dark:border-line-dark relative z-30">
   <div
     class="mx-auto max-w-3xl px-6 sm:px-8 py-3 flex items-center gap-3 font-mono text-sm"
   >
@@ -25,6 +25,12 @@ const isActive = (href: string) =>
     <span class="text-mut truncate hidden sm:inline">
       ~/{site.shortName}/portfolio
     </span>
+    <span
+      id="clock"
+      aria-hidden="true"
+      class="hidden md:inline font-mono text-mut text-xs tabular-nums ml-2"
+      >[--:--:--]</span
+    >
     <nav class="ml-auto flex items-center gap-4 sm:gap-6">
       {
         navItems.map((item) => (
@@ -55,7 +61,7 @@ const isActive = (href: string) =>
 </header>
 
 <script>
-  const init = () => {
+  const initToggle = () => {
     const btn = document.getElementById("theme-toggle");
     if (!btn || btn.dataset.bound === "1") return;
     btn.dataset.bound = "1";
@@ -69,6 +75,25 @@ const isActive = (href: string) =>
       }
     });
   };
-  init();
-  document.addEventListener("astro:after-swap", init);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const tick = () => {
+    const el = document.getElementById("clock");
+    if (!el) return;
+    const d = new Date();
+    el.textContent = `[${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
+  };
+  const startTicker = () => {
+    tick();
+    const w = window as typeof window & { __clockTimer?: number };
+    if (w.__clockTimer) return;
+    w.__clockTimer = window.setInterval(tick, 1000);
+  };
+
+  initToggle();
+  startTicker();
+  document.addEventListener("astro:after-swap", () => {
+    initToggle();
+    tick();
+  });
 </script>
