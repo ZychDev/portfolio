@@ -1,0 +1,39 @@
+---
+title: "Dlaczego Astro"
+description: "Krótko o tym, dlaczego ta strona działa na Astro, a nie na Next czy Nuxt."
+pubDate: 2026-02-03
+tags: ["astro", "performance"]
+---
+
+Wybrałem Astro do tego portfolio z trzech powodów.
+
+## Statyczne z domysłu
+
+Astro renderuje wszystko po stronie serwera w build-time. Zero JS-a tam, gdzie
+nie jest potrzebny. Strona ładuje się **natychmiast**, bo to po prostu HTML.
+
+## Wyspy interaktywności
+
+Tam, gdzie naprawdę potrzeba JS-a (np. toggle motywu), zaznaczasz to lokalnie
+przez `<script>`. Reszta to czysty HTML/CSS — nie ma globalnego runtime'u,
+nie ma hydration kosztującej setki kB.
+
+## Markdown jako natywny obywatel
+
+Treść w `.md` / `.mdx`, schemat opisuje `zod`, wpisy są w pełni typowane.
+
+```ts
+const blog = defineCollection({
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/blog" }),
+  schema: z.object({
+    title: z.string(),
+    pubDate: z.coerce.date(),
+    tags: z.array(z.string()).default([]),
+  }),
+});
+```
+
+Bez bazy, bez CMS-a, bez deployu Node-a. Cała witryna to plik `dist/` do
+wrzucenia na dowolny statyczny hosting.
+
+Less is more.
