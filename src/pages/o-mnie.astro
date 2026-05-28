@@ -1,0 +1,66 @@
+---
+import Base from "../layouts/Base.astro";
+import AsciiDivider from "../components/AsciiDivider.astro";
+import { education } from "../data/education";
+import { interests } from "../data/interests";
+---
+
+<Base title="O mnie" description="Kim jestem i co robię.">
+  <section class="reveal">
+    <p class="font-mono text-acc text-sm">// o-mnie</p>
+    <h1 class="font-mono text-3xl sm:text-4xl mt-3">cat ~/about.txt</h1>
+    <p class="mt-8 leading-relaxed max-w-prose text-lg">
+      Programista z pasją do prostych, szybkich rzeczy. Lubię czysty kod,
+      krótkie loadingi i klimaty wczesnego internetu. Tu zbieram swoje
+      projekty i przemyślenia.
+    </p>
+  </section>
+
+  <AsciiDivider />
+
+  <section class="reveal">
+    <h2 class="font-mono text-mut uppercase tracking-[0.25em] text-xs">
+      Edukacja
+    </h2>
+    <ol
+      class="mt-8 relative border-l border-line dark:border-line-dark pl-6 space-y-8"
+    >
+      {
+        education.map((e) => (
+          <li class="reveal relative">
+            <span class="absolute -left-[1.6rem] top-1.5 size-3 rounded-full bg-acc ring-4 ring-bg dark:ring-bg-dark" />
+            <p class="font-mono text-sm text-mut tabular-nums">
+              {e.from} — {e.to}
+            </p>
+            <p class="font-mono mt-1 text-base sm:text-lg">{e.school}</p>
+            {e.field && <p class="text-sm text-mut mt-0.5">{e.field}</p>}
+            {e.description && <p class="text-sm mt-2 leading-relaxed">{e.description}</p>}
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <AsciiDivider />
+
+  <section class="reveal">
+    <h2 class="font-mono text-mut uppercase tracking-[0.25em] text-xs">
+      Zainteresowania
+    </h2>
+    <ul class="mt-8 grid sm:grid-cols-2 gap-4">
+      {
+        interests.map((i) => (
+          <li class="reveal group border border-line dark:border-line-dark p-4 hover:border-acc transition-colors">
+            <p class="font-mono">
+              <span class="text-acc mr-2 inline-block group-hover:translate-x-0.5 transition-transform">
+                {i.icon}
+              </span>
+              {i.name}
+            </p>
+            <p class="text-sm text-mut mt-2 leading-relaxed">{i.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>

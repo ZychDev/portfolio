@@ -1,17 +1,72 @@
 ---
+import Base from "../layouts/Base.astro";
+import AsciiDivider from "../components/AsciiDivider.astro";
+import { site } from "../data/site";
+import { projects } from "../data/projects";
 
+const selected = projects.slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base>
+  <section class="reveal">
+    <p class="font-mono text-acc text-sm">// portfolio</p>
+    <h1
+      class="font-mono text-5xl sm:text-7xl font-medium mt-3 leading-[1.05] tracking-tight"
+    >
+      {site.author}<span class="cursor text-acc"></span>
+    </h1>
+    <p class="font-mono text-mut mt-6">
+      programista &middot; projekty &middot; notatki
+    </p>
+    <p class="mt-8 max-w-prose leading-relaxed text-lg">
+      Cześć. Buduję strony i drobne narzędzia w wolnym czasie, najczęściej
+      w TypeScripcie. Tu wrzucam to, co skończę — projekty, notatki
+      i myśli z drogi.
+    </p>
+    <div class="mt-10 flex gap-6 font-mono text-sm">
+      <a class="link-underline text-acc" href="/projekty">→ projekty</a>
+      <a class="link-underline text-acc" href="/blog">→ blog</a>
+    </div>
+  </section>
+
+  <AsciiDivider />
+
+  <section class="reveal">
+    <h2 class="font-mono text-mut uppercase tracking-[0.25em] text-xs">
+      Selected work
+    </h2>
+    <ul
+      class="mt-6 divide-y divide-line dark:divide-line-dark border-y border-line dark:border-line-dark"
+    >
+      {
+        selected.map((p) => (
+          <li class="reveal">
+            <a
+              href={`/projekty#${p.id}`}
+              class="group grid grid-cols-[2.5rem_1fr_auto_1.5rem] sm:grid-cols-[3rem_1fr_auto_2rem] items-baseline gap-3 py-5 px-2 hover:bg-acc/5 transition-colors"
+            >
+              <span class="font-mono text-acc text-sm">{p.num}</span>
+              <span class="min-w-0">
+                <span class="font-mono text-base sm:text-lg block">
+                  {p.title}
+                </span>
+                <span class="block text-sm text-mut mt-1 line-clamp-2">
+                  {p.description}
+                </span>
+              </span>
+              <span class="font-mono text-mut text-sm tabular-nums">
+                {p.year}
+              </span>
+              <span class="font-mono text-acc transition-transform group-hover:translate-x-1">
+                →
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-6 font-mono text-sm">
+      <a class="link-underline text-acc" href="/projekty">$ ls -la ~/projects</a>
+    </p>
+  </section>
+</Base>

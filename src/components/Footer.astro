@@ -1,0 +1,47 @@
+---
+import { site } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line dark:border-line-dark mt-20">
+  <div
+    class="mx-auto max-w-3xl px-6 sm:px-8 py-8 font-mono text-sm text-mut flex flex-col sm:flex-row gap-4 sm:items-center justify-between"
+  >
+    <p>
+      <span class="text-acc">$</span> last updated <time datetime={String(year)}
+        >{year}</time
+      ><span class="cursor text-acc"></span>
+    </p>
+    <ul class="flex flex-wrap gap-5">
+      <li>
+        <a
+          class="link-underline hover:text-acc"
+          href={site.github}
+          rel="noreferrer">github</a
+        >
+      </li>
+      <li>
+        <a class="link-underline hover:text-acc" href={`mailto:${site.email}`}
+          >e-mail</a
+        >
+      </li>
+      {
+        site.linkedin && (
+          <li>
+            <a
+              class="link-underline hover:text-acc"
+              href={site.linkedin}
+              rel="noreferrer"
+            >
+              linkedin
+            </a>
+          </li>
+        )
+      }
+      <li>
+        <a class="link-underline hover:text-acc" href="/rss.xml">rss</a>
+      </li>
+    </ul>
+  </div>
+</footer>

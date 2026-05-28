@@ -1,0 +1,15 @@
+---
+interface Props {
+  char?: string;
+  count?: number;
+}
+const { char = "·", count = 60 } = Astro.props;
+const line = char.repeat(count);
+---
+
+<div
+  aria-hidden="true"
+  class="font-mono text-mut text-center select-none my-12 overflow-hidden whitespace-nowrap"
+>
+  {line}
+</div>
